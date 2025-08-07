@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sourav Mondal | Spring Boot Developer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+  </head>
+  <body>
+
+    <nav class="container-fluid">
+      <ul>
+        <li><strong>Sourav Mondal</strong></li>
+      </ul>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#subscribe" role="button">Subscribe</a></li>
+      </ul>
+    </nav>
+
+    <main class="container">
+      <div class="grid">
+        <section>
+          <hgroup>
+            <h2>Spring Boot Developer</h2>
+            <h3>Building scalable microservices with Java & Docker</h3>
+          </hgroup>
+          <p>
+            I'm Sourav Mondal, a passionate backend developer specializing in Spring Boot and Microservices architecture. I thrive in containerized environments and love building reliable backend systems.
+          </p>
+          <figure>
+            <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1350&q=80" alt="Developer at work" />
+            <figcaption><a href="https://unsplash.com/photos/Yr4n8O_3UPc" target="_blank">Photo by Clément Hélardot on Unsplash</a></figcaption>
+          </figure>
+
+          <h3>Skills</h3>
+          <p>Java, Spring Boot, MySQL, Docker, Microservices</p>
+
+          <h3 id="projects">Projects</h3>
+          <p><strong>Hospital Management System</strong><br/>
+          Role-based HMS with appointment booking, payments, and video consultations.  
+          <br/>
+          🔗 <a href="https://hms-demo.vercel.app" target="_blank">Live Demo</a> • <a href="https://github.com/your/hms" target="_blank">GitHub Repo</a></p>
+        </section>
+      </div>
+    </main>
+
+    <section aria-label="Subscribe example" id="subscribe">
+      <div class="container">
+        <article>
+          <hgroup>
+            <h2>Stay Connected</h2>
+            <h3>Subscribe for updates or collaborations</h3>
+          </hgroup>
+          <form class="grid">
+            <input type="text" id="firstname" name="firstname" placeholder="Your name" aria-label="Your name" required />
+            <input type="email" id="email" name="email" placeholder="Your email" aria-label="Your email" required />
+            <button type="submit" onclick="event.preventDefault()">Subscribe</button>
+          </form>
+        </article>
+      </div>
+    </section>
+
+    <footer class="container">
+      <small>
+        <a href="#projects">Projects</a> • <a href="#subscribe">Contact</a>
+      </small>
+    </footer>
+
+  </body>
+</html>
