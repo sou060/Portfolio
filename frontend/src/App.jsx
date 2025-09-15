@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import { Navbar, Nav, Container, Button, Spinner } from "react-bootstrap";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Projects from "./pages/Projects";
-import Resume from "./pages/Resume";
-import Contact from "./pages/Contact";
+import ErrorBoundary from "./components/ErrorBoundary";
+import PageErrorBoundary from "./components/PageErrorBoundary";
+import ErrorBoundaryProvider from "./components/ErrorBoundaryProvider";
+import LazyWrapper from "./components/LazyWrapper";
+import ThemeToggle from "./components/ThemeToggle";
+import { Home, About, Projects, Resume, Contact } from "./pages";
+import { AppProviders } from "./contexts";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -28,11 +30,41 @@ function App() {
   }, [prefersReducedMotion]);
 
   const pages = {
-    home: <Home />,
-    about: <About />,
-    projects: <Projects />,
-    resume: <Resume />,
-    contact: <Contact />,
+    home: (
+      <PageErrorBoundary pageName="Home">
+        <LazyWrapper type="skeleton" count={1}>
+          <Home />
+        </LazyWrapper>
+      </PageErrorBoundary>
+    ),
+    about: (
+      <PageErrorBoundary pageName="About">
+        <LazyWrapper type="skeleton" count={2}>
+          <About />
+        </LazyWrapper>
+      </PageErrorBoundary>
+    ),
+    projects: (
+      <PageErrorBoundary pageName="Projects">
+        <LazyWrapper type="card" count={6}>
+          <Projects />
+        </LazyWrapper>
+      </PageErrorBoundary>
+    ),
+    resume: (
+      <PageErrorBoundary pageName="Resume">
+        <LazyWrapper type="skeleton" count={1}>
+          <Resume />
+        </LazyWrapper>
+      </PageErrorBoundary>
+    ),
+    contact: (
+      <PageErrorBoundary pageName="Contact">
+        <LazyWrapper type="skeleton" count={1}>
+          <Contact />
+        </LazyWrapper>
+      </PageErrorBoundary>
+    ),
   };
 
   // Snappier animations with reduced motion support
@@ -117,7 +149,9 @@ function App() {
   }
 
   return (
-    <div className="min-vh-100 bg-dark text-light">
+    <AppProviders>
+      <ErrorBoundary>
+        <div className="min-vh-100 bg-dark text-light">
       {/* Bootstrap Navigation */}
       <motion.div
         initial={{ y: -100 }}
@@ -174,19 +208,20 @@ function App() {
                 )}
               </Nav>
 
-              <motion.div
-                whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => setCurrentPage("contact")}
-                  className="ms-2"
-                >
-                  Hire Me
-                </Button>
-              </motion.div>
+                  <motion.div
+                    whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="d-flex align-items-center gap-2"
+                  >
+                    <ThemeToggle variant="icon" size="sm" />
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setCurrentPage("contact")}
+                    >
+                      Hire Me
+                    </Button>
+                  </motion.div>
             </Navbar.Collapse>
           </Container>
         </Navbar>
@@ -327,8 +362,10 @@ function App() {
           },
         }}
       />
-    </div>
-  );
-}
+            </div>
+          </ErrorBoundary>
+        </AppProviders>
+      );
+    }
 
 export default App;

@@ -5,6 +5,14 @@ import com.sourav.portfolio.model.Project;
 import com.sourav.portfolio.service.AnalyticsService;
 import com.sourav.portfolio.service.ProjectService;
 import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -24,6 +32,7 @@ import java.util.Map;
 @RequestMapping("/api/projects")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"}, 
              methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@Tag(name = "Projects", description = "Project management endpoints")
 public class ProjectController {
     
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
@@ -40,6 +49,34 @@ public class ProjectController {
     /**
      * Get all projects
      */
+    @Operation(
+        summary = "Get all projects",
+        description = "Retrieve a list of all portfolio projects with their details"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved projects",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Project.class),
+                examples = @ExampleObject(
+                    name = "Projects List",
+                    value = "[{\"id\": 1, \"title\": \"E-Commerce Platform\", \"description\": \"Full-stack e-commerce solution\", \"technologies\": [\"Spring Boot\", \"React\", \"MySQL\"], \"githubUrl\": \"https://github.com/username/project\", \"liveUrl\": \"https://project.example.com\", \"imageUrl\": \"https://example.com/image.jpg\", \"createdAt\": \"2024-01-01T00:00:00Z\", \"updatedAt\": \"2024-01-01T00:00:00Z\"}]"
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "204",
+            description = "No projects found",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content
+        )
+    })
     @GetMapping
     @Timed(value = "projects.list", description = "Time taken to list all projects")
     public ResponseEntity<List<Project>> getAllProjects(HttpServletRequest request) {
@@ -66,9 +103,36 @@ public class ProjectController {
     /**
      * Get project by ID
      */
+    @Operation(
+        summary = "Get project by ID",
+        description = "Retrieve a specific project by its unique identifier"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Project found and returned",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Project.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Project not found",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content
+        )
+    })
     @GetMapping("/{id}")
     @Timed(value = "projects.get", description = "Time taken to get project by ID")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<Project> getProjectById(
+        @Parameter(description = "Project ID", required = true, example = "1")
+        @PathVariable Long id, 
+        HttpServletRequest request) {
         logger.info("GET /api/projects/{} called", id);
         
         try {
@@ -92,8 +156,45 @@ public class ProjectController {
     /**
      * Create a new project
      */
+    @Operation(
+        summary = "Create a new project",
+        description = "Create a new portfolio project with the provided details"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Project created successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Project.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input data",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content
+        )
+    })
     @PostMapping
-    public ResponseEntity<Project> createProject(@Valid @RequestBody Project project) {
+    public ResponseEntity<Project> createProject(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Project details",
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Project.class),
+                examples = @ExampleObject(
+                    name = "Create Project",
+                    value = "{\"title\": \"New Project\", \"description\": \"Project description\", \"technologies\": [\"Spring Boot\", \"React\"], \"githubUrl\": \"https://github.com/username/project\", \"liveUrl\": \"https://project.example.com\", \"imageUrl\": \"https://example.com/image.jpg\"}"
+                )
+            )
+        )
+        @Valid @RequestBody Project project) {
         logger.info("POST /api/projects called for project: {}", project.getTitle());
         
         try {

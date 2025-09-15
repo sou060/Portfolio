@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Container,
@@ -10,34 +10,38 @@ import {
   Badge,
 } from "react-bootstrap";
 
-const Home = () => {
+const Home = memo(() => {
   // Check for reduced motion preference
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-
-  // Reduced floating elements for better performance
-  const floatingElements = Array.from(
-    { length: prefersReducedMotion ? 0 : 4 },
-    (_, i) => ({
-      id: i,
-      size: Math.random() * 60 + 30,
-      duration: 4,
-      delay: Math.random() * 1,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-    })
+  const prefersReducedMotion = useMemo(() => 
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    []
   );
 
-  const skills = [
+  // Memoized floating elements for better performance
+  const floatingElements = useMemo(() => 
+    Array.from(
+      { length: prefersReducedMotion ? 0 : 4 },
+      (_, i) => ({
+        id: i,
+        size: Math.random() * 60 + 30,
+        duration: 4,
+        delay: Math.random() * 1,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+      })
+    ),
+    [prefersReducedMotion]
+  );
+
+  const skills = useMemo(() => [
     { name: "Spring Boot", level: 95, color: "success" },
     { name: "Java", level: 90, color: "primary" },
     { name: "Microservices", level: 88, color: "info" },
     { name: "Docker", level: 85, color: "warning" },
     { name: "MySQL", level: 82, color: "danger" },
-  ];
+  ], []);
 
-  const socialLinks = [
+  const socialLinks = useMemo(() => [
     {
       name: "GitHub",
       icon: "bi bi-github",
@@ -56,10 +60,27 @@ const Home = () => {
       href: "mailto:sourav.mondal@email.com",
       color: "success",
     },
-  ];
+  ], []);
 
   // Snappier animation durations
-  const fast = { duration: prefersReducedMotion ? 0.1 : 0.2, ease: "easeOut" };
+  const fast = useMemo(() => 
+    ({ duration: prefersReducedMotion ? 0.1 : 0.2, ease: "easeOut" }),
+    [prefersReducedMotion]
+  );
+
+  // Memoized handlers
+  const handleDownloadResume = useCallback(() => {
+    // Download resume logic
+    window.open('/api/resume/download', '_blank');
+  }, []);
+
+  const handleContactClick = useCallback(() => {
+    // Navigate to contact section
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
 
   return (
     <div className="min-vh-100 position-relative overflow-hidden">
@@ -162,6 +183,7 @@ const Home = () => {
                     variant="primary"
                     size="lg"
                     className="d-flex align-items-center gap-2"
+                    onClick={handleDownloadResume}
                   >
                     <i className="bi bi-download"></i>
                     Download Resume
@@ -176,6 +198,7 @@ const Home = () => {
                     variant="outline-primary"
                     size="lg"
                     className="d-flex align-items-center gap-2"
+                    onClick={handleContactClick}
                   >
                     <i className="bi bi-envelope"></i>
                     Get In Touch
@@ -287,6 +310,8 @@ const Home = () => {
       </motion.div>
     </div>
   );
-};
+});
+
+Home.displayName = 'Home';
 
 export default Home;
